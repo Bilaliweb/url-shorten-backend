@@ -2,9 +2,6 @@ const {nanoid} = require('nanoid')
 const URL = require('../models/url')
 
 async function handleShortUrl(req, res) {
-    console.log("Working in handler...", req.body);
-    
-
     const body = req.body
 
     if(!body.url) return res.status(400).json({ msg: 'URL is required.' })
@@ -46,8 +43,6 @@ async function getURLToRedirect(req, res) {
 }
 
 async function getAnalytics(req, res) {
-    console.log("REQ: ", req.params);
-    
     const shortId = req.params.shortId
 
     const fetchedUrlId = await URL.findOne({
