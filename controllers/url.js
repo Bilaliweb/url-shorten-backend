@@ -23,6 +23,7 @@ async function handleShortUrl(req, res) {
 
     // Returning a rendered home screen on success instead of simple json response.
     return res.render('home', {
+        // This 'urlId' will be used in home.ejs file for conditional rendering
         urlId: shortID
     })
 

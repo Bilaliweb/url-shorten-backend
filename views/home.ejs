@@ -13,7 +13,7 @@
   <body>
     <div>
       <h1>URL Shortner</h1>
-      <!-- Check if in locals (which is backend containing the variables we store), urlId exists -->
+      <!-- After successful POST request, check if in locals (which is backend containing the variables we store), urlId exists -->
       <% if (locals.urlId) { %>
         <p>Short URL Generated with unique ID: http://localhost:8080/urlShortner/<%= urlId %> </p>
       <% } %>
