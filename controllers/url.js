@@ -4,6 +4,7 @@ const URL = require('../models/url')
 async function handleShortUrl(req, res) {
     const body = req.body
 
+    // url in body.url will be coming from front end
     if(!body.url) return res.status(400).json({ msg: 'URL is required.' })
 
     if(!body.url.includes('http' || 'https')) return res.status(400).json({ msg: 'Enter valid url.' })
@@ -20,7 +21,13 @@ async function handleShortUrl(req, res) {
         vistHistory: []
     })
 
-    return res.status(201).json({ msg: 'success' })
+    // Returning a rendered home screen on success instead of simple json response.
+    return res.render('home', {
+        // This 'urlId' will be used in home.ejs file for conditional rendering
+        urlId: shortID
+    })
+
+    // return res.status(201).json({ msg: 'success' })
 }
 
 async function getURLToRedirect(req, res) {
@@ -31,6 +38,7 @@ async function getURLToRedirect(req, res) {
         shortUrlId: urlId
         },
         {
+            // Specific sytanx for updating the data in 'findOneAndUpdate'
             $push: {
                 vistHistory: {
                     timestamp: Date.now()
@@ -39,6 +47,7 @@ async function getURLToRedirect(req, res) {
         }
     )
 
+    // On return, this will redirect to specific url. i.e; if 'urlId' was stored for 'google' then it will redirect to google.com
     return res.redirect(fetchedUrl.redirectUrl)
 }
 
