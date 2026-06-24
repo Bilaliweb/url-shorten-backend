@@ -1,12 +1,14 @@
 const express = require('express')
-const router = require('./routes/url')
 const { connectDB } = require('./connection')
 const path = require('path')
 const URL = require('./models/url')
 const app = express()
 const port = 8080
-const urlRouter = router
+const urlRouter = require('./routes/url')
 const staticRoute = require('./routes/staticRouter')
+const userRoute = require('./routes/user')
+const cookieParser = require('cookie-parser')
+const { restrictToLoggedInUserOnly, checkAuth } = require('./middlewares/auth')
 
 // Connecting the database
 connectDB('mongodb://127.0.0.1:27017/url-shortner-project')
@@ -34,8 +36,12 @@ app.use(express.json())
 // For data coming in Forms
 app.use(express.urlencoded({ extended: false }))
 
-app.use('/', staticRoute)
-app.use('/urlShortner', urlRouter)
+// For cookies
+app.use(cookieParser())
+
+app.use('/', checkAuth, staticRoute)
+app.use('/urlShortner', restrictToLoggedInUserOnly, urlRouter)
+app.use('/user', userRoute)
 
 app.listen(port, () => {
     console.log("Server started at port: ", port);

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Log In</h1>
+    
+    <% if (locals.error) { %>
+     <p>Error on Log in: <%= error %></p>
+    <% } %>
+    
+    <form method="post" action="/user/login">
+        <label for="">Email</label>
+        <input type="text" name="email" required />
+        <label for="">Password</label>
+        <input type="text" name="password" required />
+
+        <button type="submit">Log In</button>
+    </form>
+</body>
+</html>
