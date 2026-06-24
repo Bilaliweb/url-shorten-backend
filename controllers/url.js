@@ -9,6 +9,8 @@ async function handleShortUrl(req, res) {
 
     if(!body.url.includes('http' || 'https')) return res.status(400).json({ msg: 'Enter valid url.' })
 
+    // if()
+
     const shortID = nanoid(8)
 
     // This will store the generated ID and that ID will be used to redirect to url user provided.
@@ -18,7 +20,8 @@ async function handleShortUrl(req, res) {
     await URL.create({
         shortUrlId: shortID,
         redirectUrl: body.url,
-        vistHistory: []
+        vistHistory: [],
+        createdBy: req.user._id
     })
 
     // Returning a rendered home screen on success instead of simple json response.
