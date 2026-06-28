@@ -41,7 +41,14 @@ async function handleUserLogIn(req, res) {
     const token = setUser(user)
 
     // Setting up a cookie in response for further validation
-    res.cookie('userToken', token)
+    // res.cookie('userToken', token)
+
+    /**
+     * For sending token as json so it can be can be extracted from request headers 
+     * and can be used for further validation if request is from client other than Web Browser i.e; Mobile app
+     */
+
+    res.json({ token })
 
     return res.redirect('/')
 }
