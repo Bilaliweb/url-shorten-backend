@@ -2,6 +2,8 @@
  * Problem with this Map:
  * Whenever the server is started, this map will be empty and we have to login again.
  * Will be solving in next PR
+ * 
+ * This will behave as state and will be known as statefull authentication
  */
 const sessionIDForUser = new Map()
 

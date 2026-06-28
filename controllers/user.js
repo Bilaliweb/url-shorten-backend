@@ -1,6 +1,7 @@
 const User = require("../models/user")
 const {v4: uuidV4} = require('uuid')
 const { setSessionForUser } = require("../service/auth")
+const { setUser } = require("../service/jwtAuth")
 
 async function handleUserSignUp(req, res) {
     const { name, email, password } = req.body 
@@ -20,7 +21,7 @@ async function handleUserLogIn(req, res) {
     const user = await User.findOne({
         email,
         password
-    })
+    }).lean();
 
     if(!user) {
         return res.render('login', {
@@ -28,12 +29,19 @@ async function handleUserLogIn(req, res) {
         })
     }
 
-    const generatedSessionID = uuidV4();
-    setSessionForUser(generatedSessionID, user)
+    /**
+     * For storing a unique id against logged in user
+     * i.e;
+       const generatedSessionID = uuidV4();
+       setSessionForUser(generatedSessionID, user)
+       res.cookie('uid', generatedSessionID)
+    */
     
-    res.cookie('uid', generatedSessionID)
+    // Using JWT
+    const token = setUser(user)
 
-    console.log("New Login Response: ", res);
+    // Setting up a cookie in response for further validation
+    res.cookie('userToken', token)
 
     return res.redirect('/')
 }
