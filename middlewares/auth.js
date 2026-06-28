@@ -22,11 +22,27 @@ function restrictToLoggedInUserOnly (req, res, next) {
 
      */
 
-    const userToken = req.cookies?.userToken
+    /**
+     * Using Stateless authentication using JWT
+     */
+
+    /**
+     * Handling with cookies 
+     * Extracting token from cookies we've set while setting up cookie in login process
+    */
+    // const userToken = req.cookies?.userToken
+    
+    /**
+     * Handling with token received from server response
+     * Extracting token from request headers's property as 'Authorization' which contains the token sent in request from client
+    */
+    const userToken = req.headers['authorization']
     if(!userToken) return res.redirect('/login')
 
+    const extractedToken = userToken.split("Bearer ")[1]
+
     // User get from jwt
-    const user = getUser(userToken)
+    const user = getUser(extractedToken)
 
     if(!user) return res.redirect('/login')
 
@@ -51,7 +67,16 @@ async function checkAuth (req, res, next) {
     */
 
     // Using stateless authentication way using JWT
-    const user = getUser(req.cookies?.userToken)
+    // const user = getUser(req.cookies?.userToken)
+
+    /**
+     * Handling with token received from server response
+     * Extracting token from request headers's property as 'Authorization' which contains the token sent in request from client
+    */
+   
+    const userToken = req.headers['authorization']
+    const extractedToken = userToken?.split("Bearer ")[1]
+    const user = getUser(extractedToken)
 
     // if(!user) return res.redirect('/login')
 
