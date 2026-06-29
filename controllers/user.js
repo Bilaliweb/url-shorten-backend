@@ -4,12 +4,13 @@ const { setSessionForUser } = require("../service/auth")
 const { setUser } = require("../service/jwtAuth")
 
 async function handleUserSignUp(req, res) {
-    const { name, email, password } = req.body 
+    const { name, email, password, role } = req.body 
 
     await User.create({
         name,
         email,
-        password
+        password,
+        role
     })
 
     return res.redirect('/')
@@ -42,15 +43,16 @@ async function handleUserLogIn(req, res) {
 
     // Setting up a cookie in response for further validation
     // res.cookie('userToken', token)
-
+    
     /**
      * For sending token as json so it can be can be extracted from request headers 
      * and can be used for further validation if request is from client other than Web Browser i.e; Mobile app
-     */
+    */
 
-    res.json({ token })
-
-    return res.redirect('/')
+   res.cookie('userToken', token)
+   
+   return res.redirect('/')
+   // return res.json({ token })
 }
 
 module.exports = {
