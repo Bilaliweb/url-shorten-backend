@@ -10,10 +10,14 @@ const secret = 'secrettokenjwt@123'
 
 // Setting up jwt
 function setUser(user) {
-    console.log("User jwt: ", typeof user);
-    // Converting into simple plain object to avoid errors if not converted in query
-    // const plainObject = user.toObject()
-    // console.log("Plain object: ", typeof plainObject);
+    // console.log("User jwt: ", user);
+
+    /**
+     *  Converting into simple plain object to avoid errors if not converted in query but better is to convert at the time of query using .lean()
+    
+    const plainObject = user.toObject()
+    console.log("Plain object: ", typeof plainObject);
+    */
     
     return jwt.sign(user, secret)
     // return jwt.sign(plainObject, secret)
@@ -21,12 +25,10 @@ function setUser(user) {
 
 function getUser(token) {
     try {
-        console.log("Verified...");
         return jwt.verify(token, secret)
     } 
     catch (error) {
         console.log("Not Verified...");
-        
         return null
     }
 }

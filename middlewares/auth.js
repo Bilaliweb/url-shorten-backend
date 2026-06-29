@@ -1,92 +1,58 @@
 const { getSessionForUser } = require("../service/auth");
 const { getUser } = require("../service/jwtAuth");
 
-function restrictToLoggedInUserOnly (req, res, next) {
-
+function checkForAuthentication(req, res, next) {
     /**
-     * Using statefull authentication way using simple map set
-     const cookieId = req.cookies?.uid
-     if(!cookieId) return res.redirect('/login')
-
-     // User coming from session map set we created to store session id along with related user
-     const user = getSessionForUser(cookieId)
-     
-     if(!user) return res.redirect('/login')
+     * Check cookies first (standard for EJS/browsers), fallback to headers (Postman/APIs)
+     * 
+     * For demonstration how to utilise Bearer token from 'authorization' header
     
-     // Adding a user object in request so actual function can utilise for further logic handling
-     req.user = user
-
-     console.log("Request after setting user: ", req.user);
-
-     next()
-
-     */
-
-    /**
-     * Using Stateless authentication using JWT
-     */
-
-    /**
-     * Handling with cookies 
-     * Extracting token from cookies we've set while setting up cookie in login process
-    */
-    // const userToken = req.cookies?.userToken
+    const authorizationHeaderValue = req.headers['authorization']
+    req.user = null;
     
-    /**
-     * Handling with token received from server response
-     * Extracting token from request headers's property as 'Authorization' which contains the token sent in request from client
+    if(!authorizationHeaderValue || !authorizationHeaderValue?.startsWith('Bearer')) {
+        return next()
+    }
+    const extractedToken = authorizationHeaderValue?.split("Bearer ")[1]
     */
-    const userToken = req.headers['authorization']
-    if(!userToken) return res.redirect('/login')
+    
+    const tokenInCookie = req.cookies?.userToken
 
-    const extractedToken = userToken.split("Bearer ")[1]
+    req.user = null;
+
+    if (!tokenInCookie) {
+        return next()
+    }
 
     // User get from jwt
-    const user = getUser(extractedToken)
-
-    if(!user) return res.redirect('/login')
+    const user = getUser(tokenInCookie)
 
     // Adding a user object in request so actual function can utilise for further logic handling
     req.user = user
 
-    next()
+    return next()
 }
 
-async function checkAuth (req, res, next) {    
-    // Add req.path to your log statement to see what route is being checked
-    console.log("Checking route:", req.path); 
-    
-    /**
-     * Using statefull authentication way using simple map set.
-     * 
-      const cookieId = req.cookies?.uid
-      if(!cookieId) return res.redirect('/login')
-      User coming from session map set we created to store session id along with related user
-      const user = getSessionForUser(cookieId)
-      console.log("User in check auth: ", user);
-    */
+function restrictTo(roles) {
+    return function (req, res, next) {
+        console.log("User roles: ", roles);
+        console.log("Request user restrict: ", req.user.role);
+        
 
-    // Using stateless authentication way using JWT
-    // const user = getUser(req.cookies?.userToken)
+        if (!req.user) {
+            return res.redirect('/login')
+        }
 
-    /**
-     * Handling with token received from server response
-     * Extracting token from request headers's property as 'Authorization' which contains the token sent in request from client
-    */
-   
-    const userToken = req.headers['authorization']
-    const extractedToken = userToken?.split("Bearer ")[1]
-    const user = getUser(extractedToken)
+        // If user is logged in but not fullfiling the role
+        if (!roles.includes(req.user.role)) {
+            return res.end('UnAuthorised')
+        }
 
-    // if(!user) return res.redirect('/login')
-
-    // Adding a user object in request so actual function can utilise for further logic handling
-    req.user = user
-
-    next()
+        return next()
+    }
 }
 
 module.exports = {
-    restrictToLoggedInUserOnly,
-    checkAuth
+    checkForAuthentication,
+    restrictTo
 }
